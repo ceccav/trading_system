@@ -2,26 +2,26 @@ using System.Diagnostics;
 
 namespace App;
 
-class User : IUser
+class User
 {
-    public string Username;
+    public string UserEmail;
     private string _password;
 
-    public User(string username, string password)
+    public User(string email, string password)
     {
-        Username = username;
+        UserEmail = email;
         _password = password;
     }
 
     /// <summary>
     /// Bool for login function
     /// </summary>
-    /// <param name="username"></param>
+    /// <param name="userEmail"></param>
     /// <param name="password"></param>
     /// <returns>login if user exists</returns>
-    public bool TryLogin(string username, string password)
+    public bool TryLogin(string email, string password)
     {
-        return username == Username && password == _password;
+        return email == UserEmail && password == _password;
     }
 
 }
