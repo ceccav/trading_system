@@ -11,11 +11,12 @@ class Trade
     public int Id;
     public string FromUserEmail;
     public string ToUserEmail;
-    public string OfferedItemId;
     public string RequestedItemId;
     public tradeStatus Status;
 
-    public Trade(int id, string fromUserEmail, string toUserEmail, string offeredItemId, string requestedItemId)
+    public List<string> OfferedItemId = new List<string>();
+
+    public Trade(int id, string fromUserEmail, string toUserEmail, string requestedItemId, List<string> offeredItemId)
     {
         Id = id;
         FromUserEmail = fromUserEmail;
@@ -24,6 +25,8 @@ class Trade
         RequestedItemId = requestedItemId;
         Status = tradeStatus.pending; //new trades starts with pending
     }
+
+    // TRY MAKE TRADE, vilka är alla parametrar den ska ta in.. logik
 
 }
 

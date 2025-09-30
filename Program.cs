@@ -197,12 +197,12 @@ void SeeAvailableItems()
         return;
     }
 
-    Console.WriteLine("T R A D E  M A R K E T");
-    Console.WriteLine("------------------------");
+    Console.WriteLine("All items currently listed on the trade market");
+    Console.WriteLine("----------------------------------------------");
 
-    foreach (var it in items)
+    foreach (Item item in items)
     {
-        Console.WriteLine($"{it.ID} | {it.OwnerEmail} | {it.ItemToTrade} | {it.Description} ");
+        Console.WriteLine($"{item.ID} | {item.OwnerEmail} | {item.ItemToTrade} | {item.Description} ");
     }
 
     Console.WriteLine("PRESS ENTER TO RETURN TO MENU");
@@ -212,5 +212,71 @@ void SeeAvailableItems()
 
 void TradeMenu()
 {
-    //
+    // vad ska ske i en trade? Min användarmail, item jag ska skicka loop leta item. de som du vill sätta upp som offer, foreach, if offeritem inpu == item.itemto trade. 
+    // Kunna se andras --> välja en item, make an offer, spotta ut en lista av mina items, input readline --> tillbaka
+    // byta owner, byta status throw an exception. 
+
+    bool runningTrade = true;
+
+    while (runningTrade)
+    {
+        try { Console.Clear(); } catch { }
+
+        Console.WriteLine("T R A D E  M A R K E T");
+        Console.WriteLine("----------------------");
+        Console.WriteLine("1. Trade");
+        Console.WriteLine("2. See trade requests");
+        Console.WriteLine("3. See completed requests");
+        Console.WriteLine("4. See your items");
+        Console.WriteLine("5. Go back to menu");
+
+        string tradeChoice = Console.ReadLine();
+
+        switch (tradeChoice)
+        {
+            case "1":
+                Trade();
+                break;
+            case "2":
+                break;
+            case "3":
+                break;
+            case "4":
+                break;
+            case "5":
+                return;
+        }
+    }
+
+    void Trade()
+    {
+        try { Console.Clear(); } catch { }
+        Debug.Assert(active_user != null, "no active user");
+
+        List<Item> others = new List<Item>(); //list to hold the items of other users
+
+        int i;
+
+        for (i = 0; i < items.Count; i++)
+        {
+            if (items[i].OwnerEmail != active_user!.UserEmail) //for all the items of other users
+            {
+                others.Add(items[i]); //add to list others
+            }
+        }
+        if (others.Count == 0)
+        {
+            Console.WriteLine("No items available on the trademarket"); // if there is no items from other users, message is shown
+            Console.ReadLine();
+            return;
+        }
+
+        //for loop to display others items
+        Console.WriteLine("Pick the item you want to begin trading for");
+        for (i = 0; i < others.Count; i++)
+        {
+            Console.WriteLine((i + 1) + ". [" + others[i].ID + "]" + others[i].ItemToTrade + " | " + others[i].Description + " | owner: " + others[i].OwnerEmail);
+        }
+
+    }
 }
