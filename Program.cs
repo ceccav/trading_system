@@ -39,7 +39,7 @@ while (running)
         {
             case "1":
                 LogInUser(); //calls the method to log in
-                Debug.Assert(active_user != null); //LogInUser should set an active user.
+                             //LogInUser should set an active user.
                 break;
             case "2":
                 CreateUser(); //calls for method to create a new user
@@ -165,7 +165,7 @@ void AddItem()
 
 
     //create new item, replace null input with empty string
-    var newItem = new Item(active_user!.UserEmail, nameItem ?? "", descriptionItem ?? "");
+    Item newItem = new Item(active_user!.UserEmail, nameItem ?? "", descriptionItem ?? "");
 
     items.Add(newItem); //add to list
 
@@ -235,48 +235,144 @@ void TradeMenu()
         switch (tradeChoice)
         {
             case "1":
-                Trade();
+                TradeItems();
                 break;
             case "2":
+                TradeRequests();
                 break;
             case "3":
                 break;
             case "4":
+                ShowMyItems();
                 break;
             case "5":
                 return;
         }
     }
 
-    void Trade()
+    void TradeItems()
     {
         try { Console.Clear(); } catch { }
         Debug.Assert(active_user != null, "no active user");
 
         List<Item> others = new List<Item>(); //list to hold the items of other users
-
-        int i;
-
-        for (i = 0; i < items.Count; i++)
+        for (int i = 0; i < items.Count; i++)
         {
             if (items[i].OwnerEmail != active_user!.UserEmail) //for all the items of other users
             {
                 others.Add(items[i]); //add to list others
             }
         }
-        if (others.Count == 0)
+        if (others.Count == 0) //if the other users have no items yet, message is shown
         {
-            Console.WriteLine("No items available on the trademarket"); // if there is no items from other users, message is shown
+            Console.WriteLine("No items available on the trademarket");
+            Console.WriteLine("Press ENTER to continue...");
             Console.ReadLine();
             return;
         }
 
         //for loop to display others items
         Console.WriteLine("Pick the item you want to begin trading for");
-        for (i = 0; i < others.Count; i++)
+        Console.WriteLine("-------------------------------------------");
+        for (int i = 0; i < others.Count; i++)
         {
             Console.WriteLine((i + 1) + ". [" + others[i].ID + "]" + others[i].ItemToTrade + " | " + others[i].Description + " | owner: " + others[i].OwnerEmail);
         }
 
+        string inputTarget = Console.ReadLine();
+        int targetIdx;
+        if (!int.TryParse(inputTarget, out targetIdx) || targetIdx < 1 || targetIdx > others.Count) //takes the string input makes it into int targetIdx and checks if the number is under 1 or bigger than amount of items in other users list. Displays error message
+        {
+            Console.WriteLine("Not a valid choice");
+            Console.WriteLine("Press ENTER to continue..");
+            Console.ReadLine();
+            return;
+        }
+        Item target = others[targetIdx - 1];
+
+        // list my items 
+        List<Item> mine = new List<Item>(); //list for only my items
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].OwnerEmail == active_user!.UserEmail)
+            {
+                mine.Add(items[i]);
+            }
+        }
+        if (mine.Count == 0)
+        {
+            Console.WriteLine("you have no items to offer");
+            Console.ReadLine();
+            return;
+        }
+
+        //pick one or more of active users items to trade with
+        Console.WriteLine("Pick one of your items to offer.");
+        Console.WriteLine("Type the number and press \n");
+        for (int i = 0; i < mine.Count; i++)
+        {
+            Console.WriteLine((i + 1) + ". [" + mine[i].ID + "] " + mine[i].ItemToTrade + " | " + mine[i].Description);
+        }
+
+        // offeredIds
+
+
+        Console.Write("Number: ");
+        string s = Console.ReadLine();
+        int pick;
+        if (!int.TryParse(s, out pick) || pick < 1 || pick > mine.Count)
+        {
+            Console.WriteLine("Not a valid number.");
+            Console.WriteLine("Press ENTER to continue..");
+            return;
+        }
+
+        string offeredId = mine[pick - 1].ID;
+
+        //send request with one offerId
+        List<string> offeredIds = new List<string>();
+        offeredIds.Add(offeredId);
+
+        bool ok = Trade.tryMakeTrade(items, trades, active_user!.UserEmail, target.ID, offeredIds, nextTradeId);
+
+        if (ok)
+        {
+            nextTradeId++;
+            Console.WriteLine("Request sent to: " + target.OwnerEmail);
+            Console.WriteLine(offeredId);
+        }
+        else
+        {
+            Console.WriteLine("Couldn't create a request");
+
+        }
+
+        Console.WriteLine("Press ENTER to continue..");
+        Console.ReadLine();
+
+
+
+    }
+    void TradeRequests()
+    {
+
+    }
+
+    void ShowMyItems()
+    {
+        Console.WriteLine("---- YOUR ITEMS ----");
+        Console.WriteLine("--------------------\n");
+
+        foreach (Item item in items)
+        {
+            if (item.OwnerEmail == active_user.UserEmail)
+            {
+                Console.WriteLine($"[{item.ID}]  {item.ItemToTrade} | {item.Description}");
+            }
+        }
+
+        Console.WriteLine("---------------------");
+        Console.WriteLine("Press ENTER to continue..");
+        Console.ReadLine();
     }
 }
