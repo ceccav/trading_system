@@ -39,7 +39,7 @@ while (running)
         {
             case "1":
                 LogInUser(); //calls the method to log in
-                             //LogInUser should set an active user.
+                Debug.Assert(active_user != null, "no active user");//LogInUser should set an active user.
                 break;
             case "2":
                 CreateUser(); //calls for method to create a new user
@@ -57,7 +57,7 @@ while (running)
         Console.WriteLine("Welcome to your tradingspace");
         Console.WriteLine("----------------------------");
         Console.WriteLine("1. Add an item");
-        Console.WriteLine("2. See list of items available on the trade market");
+        Console.WriteLine("2. See your items");
         Console.WriteLine("3. Start trading"); //not connected yet
         Console.WriteLine("4. Logout");
 
@@ -69,7 +69,7 @@ while (running)
                 AddItem(); //add a new item
                 break;
             case "2":
-                SeeAvailableItems(); //show all items in the market
+                ShowMyItems(); //show all items in the market
                 break;
             case "3":
                 TradeMenu();
@@ -185,30 +185,25 @@ See all available items
 shows all items in the market
 if none exists, tells the user and returns
 */
-void SeeAvailableItems()
+
+void ShowMyItems()
 {
-    try { Console.Clear(); } catch { }
-
-    if (items.Count == 0)
-    {
-        Console.WriteLine("No items available for trading");
-        Console.WriteLine("Press any key to return");
-        Console.ReadLine();
-        return;
-    }
-
-    Console.WriteLine("All items currently listed on the trade market");
-    Console.WriteLine("----------------------------------------------");
+    Console.WriteLine("---- YOUR ITEMS ----");
+    Console.WriteLine("--------------------\n");
 
     foreach (Item item in items)
     {
-        Console.WriteLine($"{item.ID} | {item.OwnerEmail} | {item.ItemToTrade} | {item.Description} ");
+        if (item.OwnerEmail == active_user.UserEmail)
+        {
+            Console.WriteLine($"[{item.ID}]  {item.ItemToTrade} | {item.Description}");
+        }
     }
 
-    Console.WriteLine("PRESS ENTER TO RETURN TO MENU");
+    Console.WriteLine("---------------------");
+    Console.WriteLine("Press ENTER to continue..");
     Console.ReadLine();
-
 }
+
 
 void TradeMenu()
 {
@@ -227,8 +222,7 @@ void TradeMenu()
         Console.WriteLine("1. Trade");
         Console.WriteLine("2. See trade requests");
         Console.WriteLine("3. See completed requests");
-        Console.WriteLine("4. See your items");
-        Console.WriteLine("5. Go back to menu");
+        Console.WriteLine("4. Go back to menu");
 
         string tradeChoice = Console.ReadLine();
 
@@ -243,9 +237,6 @@ void TradeMenu()
             case "3":
                 break;
             case "4":
-                ShowMyItems();
-                break;
-            case "5":
                 return;
         }
     }
@@ -358,21 +349,4 @@ void TradeMenu()
 
     }
 
-    void ShowMyItems()
-    {
-        Console.WriteLine("---- YOUR ITEMS ----");
-        Console.WriteLine("--------------------\n");
-
-        foreach (Item item in items)
-        {
-            if (item.OwnerEmail == active_user.UserEmail)
-            {
-                Console.WriteLine($"[{item.ID}]  {item.ItemToTrade} | {item.Description}");
-            }
-        }
-
-        Console.WriteLine("---------------------");
-        Console.WriteLine("Press ENTER to continue..");
-        Console.ReadLine();
-    }
 }
